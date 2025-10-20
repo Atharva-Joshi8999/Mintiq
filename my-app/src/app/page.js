@@ -1,95 +1,203 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import React from "react";
+import { useState, useEffect } from "react";
+import { ethers } from "ethers";
+import Header from "../../components/Header";
+import Token from "../../components/Token";
+import Trade from "../../components/Trade";
+import Style from "./page.module.css";
+import { abi, contractAddress } from "../../contract";
+import List from "../../components/List";
 
-export default function Home() {
+function Home() {
+  const [provider, setProvider] = useState(null);
+  const [account, setAccount] = useState(null);
+  const [factory, setFactory] = useState(null);
+  const [fee, setFee] = useState(0);
+  const [tokens, setTokens] = useState([]);
+  const [token, setToken] = useState(null);
+  const [showCreate, setShowCreate] = useState(false);
+  const [showTrade, setShowTrade] = useState(false);
+
+  function toggleButton() {
+    showCreate ? setShowCreate(false) : setShowCreate(true);
+  }
+
+  function toggleTrade(token) {
+    setToken(token);
+    showTrade ? setShowTrade(false) : setShowTrade(true);
+  }
+
+  async function loadTokens() {
+
+    
+    if (!factory) return;
+
+    console.log("🔄 Loading tokens...");
+    const localTokens = JSON.parse(localStorage.getItem("createdTokens")) || [];
+    const totalTokens = [];
+    const tokenSaleCount = await factory.tokenCount();
+    
+    console.log(`Total tokens created: ${tokenSaleCount}`);
+    
+    for (let i = 0; i < tokenSaleCount; i++) {
+      const tokenDisplay = await factory.getTokenSale(i);
+
+      console.log(`Token ${i}: ${tokenDisplay.name}, isOpen: ${tokenDisplay.isOpen}`);
+
+    
+      if (!tokenDisplay.isOpen) {
+        console.log(` Token ${tokenDisplay.name} is CLOSED, skipping...`);
+        continue;
+      }
+    
+      console.log(` Token ${tokenDisplay.name} is OPEN, adding to list`);
+
+      const token = {
+        token: tokenDisplay.token,
+        address: tokenDisplay.address,
+        name: tokenDisplay.name,
+        creator: tokenDisplay.creator,
+        sold: tokenDisplay.sold,
+        raised: tokenDisplay.raised,
+        isOpen: tokenDisplay.isOpen,
+      };
+
+      const match = localTokens.find(
+        (t) =>
+          t.name.trim().toLowerCase() === tokenDisplay.name.trim().toLowerCase()
+      );
+
+      if (match) {
+        token.image = match.image;
+      }
+
+      totalTokens.push(token);
+    }
+
+    setTokens(totalTokens.reverse());
+    console.log(`Loaded ${totalTokens.length} open tokens`);
+  }
+
+  async function loadWallet() {
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  setProvider(provider);
+
+ 
+  const network = await provider.getNetwork();
+  console.log("Connected to network:", network.name, "Chain ID:", network.chainId);
+
+  
+  const code = await provider.getCode(contractAddress);
+  console.log("Contract code length:", code.length);
+  
+  if (code === "0x") {
+    console.error(" NO CONTRACT FOUND AT ADDRESS:", contractAddress);
+    alert("Contract not deployed on this network! Please check your network and contract address.");
+    return;
+  }
+
+  console.log(" Contract found at address:", contractAddress);
+
+  const factory = new ethers.Contract(contractAddress, abi, provider);
+  setFactory(factory);
+
+  try {
+    const fee = await factory.fee();
+    setFee(fee);
+    console.log(" Contract is working! Fee:", ethers.formatEther(fee), "ETH");
+  } catch (error) {
+    console.error(" Error calling contract:", error);
+  }
+}
+  
+
+  useEffect(() => {
+    loadWallet();
+  }, []);
+
+  useEffect(() => {
+    if (factory) {
+      loadTokens();
+    }
+  }, [factory]);
+
+  useEffect(() => {
+    if (fee) {
+      console.log("Contract fee:", ethers.formatEther(fee), "ETH");
+    }
+  }, [fee]);
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className={Style.Home}>
+      <Header account={account} setAccount={setAccount} />
 
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <main>
+        <div className={Style.mainContent}>
+          <button
+            onClick={() => {
+              if (factory && account) toggleButton();
+            }}
+            className={Style.button2}
+            disabled={!factory || !account}
           >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
+            {!factory
+              ? "Contract Not Deployed"
+              : !account
+              ? "Connect Metamask"
+              : "Create Your New Token"}
+          </button>
+          
+          <button
+            onClick={loadTokens}
+            className={Style.button2}
+            disabled={!factory}
+            style={{ marginTop: "10px" }}
           >
-            Read our docs
-          </a>
+            🔄 Refresh Listings
+          </button>
+        </div>
+
+        <div className="listings">
+          <h1>New Listings</h1>
+
+          <div className="tokens">
+            {!account ? (
+              <p>Please connect wallet</p>
+            ) : tokens.length === 0 ? (
+              <p>No tokens listed</p>
+            ) : (
+              tokens.map((token, index) => (
+                <Token key={index} token={token} toggleTrade={toggleTrade} />
+              ))
+            )}
+          </div>
         </div>
       </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      {showCreate && (
+        <List
+          toggleButton={toggleButton}
+          fee={fee}
+          provider={provider}
+          factory={factory}
+          loadTokens={loadTokens}
+        />
+      )}
+
+      {showTrade && (
+        <Trade
+          toggleTrade={toggleTrade}
+          token={token}
+          provider={provider}
+          account={account}
+          factory={factory}
+          loadTokens={loadTokens}
+        />
+      )}
+      
     </div>
   );
 }
+
+export default Home;
