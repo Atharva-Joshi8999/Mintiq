@@ -12,7 +12,7 @@
 }
 
 .token::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
@@ -20,7 +20,9 @@
   height: 200%;
   background: radial-gradient(circle, rgba(102, 126, 234, 0.15) 0%, transparent 70%);
   opacity: 0;
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
   transform: scale(0.8);
 }
 
@@ -30,7 +32,7 @@
 }
 
 .token::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -47,9 +49,10 @@
 .token:hover {
   transform: translateY(-10px) scale(1.03);
   border-color: #667eea;
-  box-shadow: 0 15px 45px rgba(102, 126, 234, 0.5), 
-              0 0 30px rgba(102, 126, 234, 0.3),
-              inset 0 0 20px rgba(102, 126, 234, 0.1);
+  box-shadow:
+    0 15px 45px rgba(102, 126, 234, 0.5),
+    0 0 30px rgba(102, 126, 234, 0.3),
+    inset 0 0 20px rgba(102, 126, 234, 0.1);
 }
 
 .token:active {
@@ -108,7 +111,8 @@
 }
 
 @keyframes shimmer {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {

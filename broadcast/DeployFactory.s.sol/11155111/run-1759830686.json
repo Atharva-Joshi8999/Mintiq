@@ -6,9 +6,7 @@
       "contractName": "Factory",
       "contractAddress": "0xcf4ea68287748f37bfb7e3e7363b963a23ebe67f",
       "function": null,
-      "arguments": [
-        "1000000000000000000"
-      ],
+      "arguments": ["1000000000000000000"],
       "transaction": {
         "from": "0xa616de5d6bd375fb0eed35f9291581f3d7c84961",
         "gas": "0x458177",

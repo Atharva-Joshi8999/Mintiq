@@ -29,28 +29,25 @@ function Home() {
   }
 
   async function loadTokens() {
-
-    
     if (!factory) return;
 
     console.log("🔄 Loading tokens...");
     const localTokens = JSON.parse(localStorage.getItem("createdTokens")) || [];
     const totalTokens = [];
     const tokenSaleCount = await factory.tokenCount();
-    
+
     console.log(`Total tokens created: ${tokenSaleCount}`);
-    
+
     for (let i = 0; i < tokenSaleCount; i++) {
       const tokenDisplay = await factory.getTokenSale(i);
 
       console.log(`Token ${i}: ${tokenDisplay.name}, isOpen: ${tokenDisplay.isOpen}`);
 
-    
       if (!tokenDisplay.isOpen) {
         console.log(` Token ${tokenDisplay.name} is CLOSED, skipping...`);
         continue;
       }
-    
+
       console.log(` Token ${tokenDisplay.name} is OPEN, adding to list`);
 
       const token = {
@@ -64,8 +61,7 @@ function Home() {
       };
 
       const match = localTokens.find(
-        (t) =>
-          t.name.trim().toLowerCase() === tokenDisplay.name.trim().toLowerCase()
+        (t) => t.name.trim().toLowerCase() === tokenDisplay.name.trim().toLowerCase()
       );
 
       if (match) {
@@ -80,37 +76,36 @@ function Home() {
   }
 
   async function loadWallet() {
-  const provider = new ethers.BrowserProvider(window.ethereum);
-  setProvider(provider);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    setProvider(provider);
 
- 
-  const network = await provider.getNetwork();
-  console.log("Connected to network:", network.name, "Chain ID:", network.chainId);
+    const network = await provider.getNetwork();
+    console.log("Connected to network:", network.name, "Chain ID:", network.chainId);
 
-  
-  const code = await provider.getCode(contractAddress);
-  console.log("Contract code length:", code.length);
-  
-  if (code === "0x") {
-    console.error(" NO CONTRACT FOUND AT ADDRESS:", contractAddress);
-    alert("Contract not deployed on this network! Please check your network and contract address.");
-    return;
+    const code = await provider.getCode(contractAddress);
+    console.log("Contract code length:", code.length);
+
+    if (code === "0x") {
+      console.error(" NO CONTRACT FOUND AT ADDRESS:", contractAddress);
+      alert(
+        "Contract not deployed on this network! Please check your network and contract address."
+      );
+      return;
+    }
+
+    console.log(" Contract found at address:", contractAddress);
+
+    const factory = new ethers.Contract(contractAddress, abi, provider);
+    setFactory(factory);
+
+    try {
+      const fee = await factory.fee();
+      setFee(fee);
+      console.log(" Contract is working! Fee:", ethers.formatEther(fee), "ETH");
+    } catch (error) {
+      console.error(" Error calling contract:", error);
+    }
   }
-
-  console.log(" Contract found at address:", contractAddress);
-
-  const factory = new ethers.Contract(contractAddress, abi, provider);
-  setFactory(factory);
-
-  try {
-    const fee = await factory.fee();
-    setFee(fee);
-    console.log(" Contract is working! Fee:", ethers.formatEther(fee), "ETH");
-  } catch (error) {
-    console.error(" Error calling contract:", error);
-  }
-}
-  
 
   useEffect(() => {
     loadWallet();
@@ -144,10 +139,10 @@ function Home() {
             {!factory
               ? "Contract Not Deployed"
               : !account
-              ? "Connect Metamask"
-              : "Create Your New Token"}
+                ? "Connect Metamask"
+                : "Create Your New Token"}
           </button>
-          
+
           <button
             onClick={loadTokens}
             className={Style.button2}
@@ -195,7 +190,6 @@ function Home() {
           loadTokens={loadTokens}
         />
       )}
-      
     </div>
   );
 }

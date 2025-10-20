@@ -30,12 +30,11 @@ function Trade({ toggleTrade, token, provider, account, factory, loadTokens }) {
 
       await tx.wait();
       alert("Purchase Successful!");
-      
-   
+
       if (loadTokens) {
         await loadTokens();
       }
-      
+
       toggleTrade();
     } catch (err) {
       console.error(err);
@@ -64,22 +63,14 @@ function Trade({ toggleTrade, token, provider, account, factory, loadTokens }) {
         </button>
 
         <div className={styles.tokenDetails}>
-          {token.image && (
-            <img
-              src={token.image}
-              alt="token image"
-              className={styles.tokenImage}
-            />
-          )}
+          {token.image && <img src={token.image} alt="token image" className={styles.tokenImage} />}
 
           <p className={styles.creator}>
             created by {token.creator.slice(0, 6)}...
             {token.creator.slice(38, 42)}
           </p>
 
-          <p className={styles.marketCap}>
-            market Cap: {ethers.formatUnits(token.raised, 18)} ETH
-          </p>
+          <p className={styles.marketCap}>market Cap: {ethers.formatUnits(token.raised, 18)} ETH</p>
 
           <p className={styles.tokenName}>{token.name}</p>
         </div>
@@ -89,30 +80,22 @@ function Trade({ toggleTrade, token, provider, account, factory, loadTokens }) {
         <div className={styles.tradeDetails}>
           <div className={styles.detailCard}>
             <p>Target</p>
-            <p className={styles.detailValue}>
-              {ethers.formatUnits(target, 18)} ETH
-            </p>
+            <p className={styles.detailValue}>{ethers.formatUnits(target, 18)} ETH</p>
           </div>
           <div className={styles.detailCard}>
             <p>Limit</p>
-            <p className={styles.detailValue}>
-              {ethers.formatUnits(limit, 18)} ETH
-            </p>
+            <p className={styles.detailValue}>{ethers.formatUnits(limit, 18)} ETH</p>
           </div>
           <div className={styles.detailCard}>
             <p>Cost</p>
-            <p className={styles.detailValue}>
-              {ethers.formatUnits(cost, 18)} ETH
-            </p>
+            <p className={styles.detailValue}>{ethers.formatUnits(cost, 18)} ETH</p>
           </div>
         </div>
 
         <div className={styles.buySection}>
           <h3>Buy Tokens</h3>
           {token.sold >= limit || token.raised >= limit ? (
-            <p className={styles.limitMessage}>
-              Token sale has reached its limit.
-            </p>
+            <p className={styles.limitMessage}>Token sale has reached its limit.</p>
           ) : (
             <form
               onSubmit={async (e) => {
@@ -130,11 +113,7 @@ function Trade({ toggleTrade, token, provider, account, factory, loadTokens }) {
                 placeholder="Enter Token"
                 className={styles.amountInput}
               />
-              <input
-                type="submit"
-                value="Buy Tokens"
-                className={styles.buyButton}
-              />
+              <input type="submit" value="Buy Tokens" className={styles.buyButton} />
             </form>
           )}
         </div>

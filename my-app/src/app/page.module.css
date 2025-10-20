@@ -3,7 +3,7 @@
   background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
   background-attachment: fixed;
   color: #fff;
-  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Inter", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .Home main {
@@ -31,7 +31,9 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.4s ease;
-  box-shadow: 0 0 30px rgba(102, 126, 234, 0.3), inset 0 0 20px rgba(102, 126, 234, 0.1);
+  box-shadow:
+    0 0 30px rgba(102, 126, 234, 0.3),
+    inset 0 0 20px rgba(102, 126, 234, 0.1);
   text-transform: uppercase;
   letter-spacing: 2px;
   position: relative;
@@ -40,7 +42,7 @@
 }
 
 .button2::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -61,7 +63,9 @@
   color: #fff;
   border-color: #764ba2;
   transform: translateY(-5px);
-  box-shadow: 0 15px 50px rgba(102, 126, 234, 0.6), 0 0 50px rgba(102, 126, 234, 0.4);
+  box-shadow:
+    0 15px 50px rgba(102, 126, 234, 0.6),
+    0 0 50px rgba(102, 126, 234, 0.4);
 }
 
 .button2:active {
@@ -97,7 +101,8 @@
 }
 
 @keyframes titlePulse {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
   }
   50% {
@@ -133,7 +138,7 @@
 }
 
 .Home :global(.token)::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -50%;
   left: -50%;
@@ -151,7 +156,9 @@
 .Home :global(.token):hover {
   transform: translateY(-8px) scale(1.02);
   border-color: #667eea;
-  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4), 0 0 30px rgba(102, 126, 234, 0.2);
+  box-shadow:
+    0 15px 40px rgba(102, 126, 234, 0.4),
+    0 0 30px rgba(102, 126, 234, 0.2);
 }
 
 .Home :global(.token_details) {

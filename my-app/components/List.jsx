@@ -22,10 +22,7 @@ function List({ toggleButton, fee, provider, factory, loadTokens }) {
       const formData = new FormData(event.target);
       const name = formData.get("name");
       const symbol = formData.get("symbol");
-      const totalSupply = ethers.parseUnits(
-        formData.get("totalSupply").toString(),
-        18
-      );
+      const totalSupply = ethers.parseUnits(formData.get("totalSupply").toString(), 18);
 
       const signer = await provider.getSigner();
       const tx = await factory.connect(signer).create(name, symbol, totalSupply, {
@@ -45,17 +42,16 @@ function List({ toggleButton, fee, provider, factory, loadTokens }) {
       let localTokens = JSON.parse(localStorage.getItem("createdTokens")) || [];
       localTokens.push(createdToken);
       localStorage.setItem("createdTokens", JSON.stringify(localTokens));
-      
+
       // Refresh the token list after successful creation
       if (loadTokens) {
         await loadTokens();
       }
-      
+
       toggleButton();
     } catch (error) {
       alert("Supply of token is too low.");
 
-      
       if (error.code === "INSUFFICIENT_FUNDS") {
         alert("Insufficient Fund..");
       } else if (error.code === "ACTION_REJECTED") {
@@ -70,7 +66,7 @@ function List({ toggleButton, fee, provider, factory, loadTokens }) {
   const handleIpfs = async (e) => {
     e.preventDefault();
     if (!file) return alert("Please select a file first");
-    
+
     setUploading(true);
     console.log(file);
 
@@ -107,22 +103,16 @@ function List({ toggleButton, fee, provider, factory, loadTokens }) {
       <p>Fee: {fee ? ethers.formatEther(fee) : "0"} ETH</p>
 
       <form onSubmit={ListHandler} className={Style.form}>
-        <input 
-          type="text" 
-          name="name" 
-          placeholder="Token Name" 
-          className={Style.input}
-          required
-        />
-        
-        <input 
-          type="text" 
-          name="symbol" 
-          placeholder="Token Symbol (e.g., RY)" 
+        <input type="text" name="name" placeholder="Token Name" className={Style.input} required />
+
+        <input
+          type="text"
+          name="symbol"
+          placeholder="Token Symbol (e.g., RY)"
           className={Style.inputSymbol}
           required
         />
-        
+
         <input
           type="number"
           name="totalSupply"
@@ -141,27 +131,15 @@ function List({ toggleButton, fee, provider, factory, loadTokens }) {
 
         {fileUrl && (
           <div className={Style.imagePreview}>
-            <img
-              src={fileUrl}
-              alt="Token Preview"
-            />
+            <img src={fileUrl} alt="Token Preview" />
           </div>
         )}
 
-        <button 
-          type="button" 
-          onClick={handleIpfs}
-          disabled={!file || uploading}
-        >
+        <button type="button" onClick={handleIpfs} disabled={!file || uploading}>
           {uploading ? "Uploading..." : "Upload File"}
         </button>
 
-        <input 
-          type="submit" 
-          value="[ List Token ]" 
-          className={Style.button2}
-          disabled={!fileUrl}
-        />
+        <input type="submit" value="[ List Token ]" className={Style.button2} disabled={!fileUrl} />
       </form>
 
       <button onClick={toggleButton} className={Style.btn}>
