@@ -4,6 +4,7 @@ out/
 artifacts/
 typechain/
 coverage/
+broadcast/
 
 
 # Ignores development broadcast logs
@@ -22,3 +23,5 @@ docs/
 
 # OS files
 .DS_Store
+
+github/workflows/
