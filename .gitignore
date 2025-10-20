@@ -4,24 +4,33 @@ out/
 artifacts/
 typechain/
 coverage/
+
+# Foundry broadcast logs
 broadcast/
-
-
-# Ignores development broadcast logs
 !/broadcast
 /broadcast/*/31337/
-/broadcast/**/dry-run/
+broadcast/**/dry-run/
 
-# Docs
-docs/
+# Node and React
+node_modules/
+dist/
+build/
 
-# Dotenv file
+# Env files
 .env
 .env.local
 .env.*.local
 .env.test.local
 
-# OS files
+# OS
 .DS_Store
 
-github/workflows/
+# Docs
+docs/
+
+# IDEs
+.vscode/
+.idea/
+
+# GitHub
+!.github/workflows/

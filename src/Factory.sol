@@ -36,26 +36,25 @@ contract Factory {
     }
 
     /// @notice create a new token sale
-   
-function create(string memory _name, string memory _symbol, uint256 totalSupply) external payable {
-    require(msg.value >= fee, "Value must be greater than Fee"); // check fee
 
-    // Calculate the minimum required supply to reach TARGET
-    uint256 floorPrice = getCost(0); // starting price
-    uint256 minSupply = (TARGET * 1e18) / floorPrice;
-    require(totalSupply >= minSupply, "Token supply too low to reach TARGET");
+    function create(string memory _name, string memory _symbol, uint256 totalSupply) external payable {
+        require(msg.value >= fee, "Value must be greater than Fee"); // check fee
 
-    // Deploy token
-    Token token = new Token(address(this), _name, _symbol, totalSupply);
-    emit createdEvent(address(token));
+        // Calculate the minimum required supply to reach TARGET
+        uint256 floorPrice = getCost(0); // starting price
+        uint256 minSupply = (TARGET * 1e18) / floorPrice;
+        require(totalSupply >= minSupply, "Token supply too low to reach TARGET");
 
-    tokens.push(address(token)); // add token to list
-    tokenCount++;
+        // Deploy token
+        Token token = new Token(address(this), _name, _symbol, totalSupply);
+        emit createdEvent(address(token));
 
-    Sale memory s = Sale(address(token), _name, msg.sender, 0, 0, true); // create sale
-    tokenSale[address(token)] = s; // store sale
-}
+        tokens.push(address(token)); // add token to list
+        tokenCount++;
 
+        Sale memory s = Sale(address(token), _name, msg.sender, 0, 0, true); // create sale
+        tokenSale[address(token)] = s; // store sale
+    }
 
     /// @notice fetch token sale by index
     function getTokenSale(uint256 index) public view returns (Sale memory) {
@@ -79,38 +78,35 @@ function create(string memory _name, string memory _symbol, uint256 totalSupply)
         return cost;
     }
 
-   
-/// @notice buy tokens from sale
-function buy(address _token, uint256 amt) external payable {
-    Sale storage sale = tokenSale[_token]; //get sale
+    /// @notice buy tokens from sale
+    function buy(address _token, uint256 amt) external payable {
+        Sale storage sale = tokenSale[_token]; //get sale
 
-    require(sale.isOpen, "Sorry,buying is closed"); // sale must be open
-    require(amt >= 1 ether, "Amount is too low");
-    require(amt <= 10000 ether, "Amount exceed");
+        require(sale.isOpen, "Sorry,buying is closed"); // sale must be open
+        require(amt >= 1 ether, "Amount is too low");
+        require(amt <= 10000 ether, "Amount exceed");
 
-    uint256 cost = getCost(sale.sold);
-    uint256 price = (cost * amt) / 10**18;
+        uint256 cost = getCost(sale.sold);
+        uint256 price = (cost * amt) / 10 ** 18;
 
-    require(msg.value >= price, "Not enough ETH");
+        require(msg.value >= price, "Not enough ETH");
 
-    sale.sold += amt; // update sold
-    sale.raised += price; // update raised
+        sale.sold += amt; // update sold
+        sale.raised += price; // update raised
 
-    
-    bool success = Token(_token).transfer(msg.sender, amt);
-    require(success, "Transfer Token Failed");
+        bool success = Token(_token).transfer(msg.sender, amt);
+        require(success, "Transfer Token Failed");
 
-    
-    uint256 remainingTokens = Token(_token).balanceOf(address(this));
+        uint256 remainingTokens = Token(_token).balanceOf(address(this));
 
-   
-    if (sale.sold >= TOKEN_LIMIT || sale.raised >= TARGET || remainingTokens == 0) {
-        sale.isOpen = false;
+        if (sale.sold >= TOKEN_LIMIT || sale.raised >= TARGET || remainingTokens == 0) {
+            sale.isOpen = false;
+        }
+
+        emit buyEvent(_token, amt);
     }
-
-    emit buyEvent(_token, amt);
-}
     /// @notice owner can manually close a sale
+
     function closeSale(address _token) external {
         require(msg.sender == owner, "Only owner can close sale");
         Sale storage s = tokenSale[_token];
