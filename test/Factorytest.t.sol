@@ -105,7 +105,7 @@ contract FactoryTest is Test {
 
         vm.deal(user2, 10 ether);
         vm.prank(user2);
-        vm.expectRevert(bytes("Amount exeed"));
+       vm.expectRevert(bytes("Amount exceeds maximum purchase limit"));
         f2.buy{value: 1 ether}(tokenAddr, 20_000 ether);
     }
 }

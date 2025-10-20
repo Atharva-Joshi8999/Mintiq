@@ -84,7 +84,7 @@ contract Factory {
 
         require(sale.isOpen, "Sorry,buying is closed"); // sale must be open
         require(amt >= 1 ether, "Amount is too low");
-        require(amt <= 10000 ether, "Amount exceed");
+       require(amt <= 10000 ether, "Amount exceeds maximum purchase limit");
 
         uint256 cost = getCost(sale.sold);
         uint256 price = (cost * amt) / 10 ** 18;
