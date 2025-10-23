@@ -19,6 +19,47 @@ function Home() {
   const [showCreate, setShowCreate] = useState(false);
   const [showTrade, setShowTrade] = useState(false);
 
+  try{
+  useEffect(()=>{
+    if (!window.ethereum)
+      {
+        alert("Please install MetaMask to use this dApp!");
+      } else {
+        loadWallet();
+      }
+  }, []);
+} catch (error){
+  console.error("Install MetaMask:", error);
+}
+
+async function disconnectWallet() {
+  try {
+    
+    if (window.ethereum?.request) {
+      await window.ethereum.request({
+        method: "wallet_revokePermissions",
+        params: [{ eth_accounts: {} }],
+      });
+    }
+
+    
+    setAccount(null);
+    setProvider(null);
+    setFactory(null);
+    setTokens([]);
+    setToken(null);
+    setShowCreate(false);
+    setShowTrade(false);
+
+    
+    localStorage.removeItem("connected");
+    console.log("🔌 Wallet disconnected successfully.");
+  } catch (error) {
+    console.error("Failed to disconnect wallet:", error);
+  }
+}
+
+
   function toggleButton() {
     showCreate ? setShowCreate(false) : setShowCreate(true);
   }
@@ -142,6 +183,14 @@ function Home() {
                 ? "Connect Metamask"
                 : "Create Your New Token"}
           </button>
+          <button
+  onClick={disconnectWallet}
+  className={Style.button2}
+  style={{ marginTop: "10px", backgroundColor: "#ff4d4d" }}
+>
+  🔌 Disconnect Wallet
+</button>
+
 
           <button
             onClick={loadTokens}
