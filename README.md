@@ -153,7 +153,7 @@ Pinata API keys (for IPFS upload)
 
 🪜 Steps
 # 1. Clone this repository
-git clone https://github.com/Atharva-Joshi8999/MintiqFrontend.git
+git clone https://github.com/Atharva-Joshi8999/Mintiq.git
 
 # 2. Install dependencies
 cd MintiqFrontend
